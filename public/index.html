@@ -258,13 +258,25 @@ async function callAPI(messages){
 }
 
 // ─── Navigation ───
+var adminOK=false;
 function go(p){
+  if(p==='upload'&&!adminOK){askPW();return;}
   document.querySelectorAll('.pg').forEach(function(e){e.classList.remove('on')});
   $('p-'+p).classList.add('on');
   document.querySelectorAll('.nav-b').forEach(function(b){b.classList.remove('on')});
   var nb=document.querySelector('.nav-b[data-p="'+p+'"]');if(nb)nb.classList.add('on');
   if(p==='home')rHome();if(p==='upload')rUpload();if(p==='config')rConfig();
   window.scrollTo(0,0);
+}
+function askPW(){
+  var pw=prompt('🔒 자료 관리 비밀번호를 입력하세요:');
+  if(!pw)return;
+  fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})})
+  .then(function(r){return r.json()})
+  .then(function(d){
+    if(d.ok){adminOK=true;go('upload');}
+    else{alert('❌ '+( d.error||'비밀번호가 틀렸습니다.'));}
+  }).catch(function(){alert('서버 연결 오류');});
 }
 
 function stats(){var tw=0,ts=0;Object.values(L).forEach(function(v){tw+=(v.words||[]).length;ts+=(v.sentences||[]).length;});return{lc:Object.keys(L).length,tw:tw,ts:ts};}
