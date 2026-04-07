@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>중국어 시험 생성기</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>中</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Pretendard:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf8f5;--card:#fff;--accent:#c41e3a;--al:#fff0f0;--ad:#8b1528;--text:#1a1a1a;--ts:#6b6b6b;--bdr:#e8e4e0;--bl:#f0ece8;--ok:#2d8a56;--warn:#d4880f;--ink:#2c2c2c;--fb:'Pretendard','Noto Sans KR',sans-serif;--fc:'Noto Serif SC','SimSun',serif;--fm:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100vh}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:24px;height:24px;border:3px solid var(--al);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
+
+/* Header */
+.hd{background:linear-gradient(135deg,#c41e3a,#8b1528);padding:14px 0;color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 3px 12px rgba(196,30,58,.2)}
+.hd-in{max-width:960px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer}.logo-c{font-size:24px;font-family:var(--fc);font-weight:700}.logo-t{font-size:15px;font-weight:600}.logo-s{font-size:9px;opacity:.7}
+.nav{display:flex;gap:4px}.nav-b{background:0;border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 12px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:500;font-family:var(--fb);white-space:nowrap;transition:background .15s}.nav-b.on,.nav-b:hover{background:rgba(255,255,255,.2)}
+
+/* Main */
+.mn{max-width:960px;margin:0 auto;padding:24px 16px}
+.pg{display:none}.pg.on{display:block}
+.card{background:var(--card);border-radius:14px;border:1px solid var(--bdr);padding:22px;margin-bottom:16px}
+h2{font-size:19px;font-weight:700;margin-bottom:4px}
+.sub{color:var(--ts);font-size:12px;margin-bottom:22px}
+
+/* Stats grid */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px}
+.stat{background:var(--card);border-radius:12px;padding:20px 14px;text-align:center;border:1px solid var(--bdr)}
+.stat-v{font-size:28px;font-weight:700;font-family:var(--fm)}.stat-l{font-size:11px;color:var(--ts);margin-top:3px}
+
+/* Actions */
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.act{border-radius:14px;padding:24px 18px;cursor:pointer;text-align:left;font-family:var(--fb);border:none}
+.act .ic{font-size:24px;margin-bottom:6px}.act .ti{font-size:14px;font-weight:600}.act .de{font-size:11px;margin-top:3px;opacity:.8}
+
+/* Lesson grid */
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(65px,1fr));gap:5px}
+.lcell{border-radius:6px;padding:6px 2px;text-align:center;font-size:10px;border:1px solid var(--bdr);background:var(--bl);color:var(--ts)}
+.lcell.has{background:var(--al);color:var(--accent);font-weight:600;border-color:rgba(196,30,58,.15)}
+.lcell .s{font-size:8px;opacity:.7}
+
+/* Form elements */
+.row{display:grid;gap:12px;margin-bottom:14px}.r2{grid-template-columns:1fr 1fr}.r3{grid-template-columns:1fr auto 1fr;align-items:end}
+label.lb{font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px}label.lb span{font-weight:400;opacity:.6}
+.inp,.sel{width:100%;padding:8px 10px;border-radius:7px;border:1px solid var(--bdr);font-size:12px;font-family:var(--fb);background:var(--bg);color:var(--text)}
+textarea.inp{min-height:100px;font-family:var(--fm);line-height:1.7;resize:vertical}
+.tgl{display:flex;gap:6px}.tgl-b{flex:1;padding:8px;border-radius:7px;border:1px solid var(--bdr);background:var(--bg);color:var(--ts);font-weight:600;font-size:12px;cursor:pointer;font-family:var(--fb);text-align:center;transition:all .15s}.tgl-b.on{border-color:var(--accent);background:var(--al);color:var(--accent)}
+
+/* Buttons */
+.btn{padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--fb);border:none;transition:all .15s}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:var(--ad)}
+.btn-o{background:var(--bg);border:1px solid var(--bdr);color:var(--text)}
+.btn-g{background:linear-gradient(135deg,#c41e3a,#8b1528);color:#fff}
+.btn-full{width:100%;padding:12px;font-size:14px;border-radius:9px}
+.btn-d{opacity:.4;cursor:default;background:var(--bl);color:var(--ts)}
+.btn-sm{padding:4px 8px;font-size:10px;border-radius:5px}
+.btn-del{background:#fff0f0;color:var(--accent);border:1px solid rgba(196,30,58,.2)}
+
+/* Image upload */
+.iup{border:2px dashed var(--bdr);border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:var(--bg);transition:all .2s}
+.iup:hover{border-color:var(--accent);background:var(--al)}
+.iup.loading{border-color:var(--accent);background:var(--al);cursor:wait}
+
+/* Messages */
+.msg{padding:8px 12px;border-radius:7px;font-size:11px;margin-top:10px;white-space:pre-wrap}
+.msg-ok{background:#f0fff4;color:var(--ok)}.msg-err{background:#fff0f0;color:var(--accent)}.msg-info{background:#fff8e6;color:#8a6d2d}
+
+/* Progress */
+.prog{width:100%;height:5px;background:var(--bl);border-radius:3px;overflow:hidden;margin:8px 0}.prog-f{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+
+/* Divider */
+.dvd{display:flex;align-items:center;gap:10px;margin:16px 0}.dvd::before,.dvd::after{content:'';flex:1;height:1px;background:var(--bdr)}.dvd span{font-size:10px;color:var(--ts)}
+
+/* Data list */
+.dlist{margin-top:16px}
+.dlist-h{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.dlist-h .cnt{font-size:11px;color:var(--ts);font-weight:400}
+.ditm{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--bdr);border-radius:8px;margin-bottom:5px;background:var(--card);font-size:12px}
+.ditm .hz{font-family:var(--fc);font-size:16px;min-width:60px}
+.ditm .py{font-family:var(--fm);font-size:11px;color:var(--accent);min-width:80px}
+.ditm .mn2{flex:1;color:var(--ts)}
+.ditm .acts2{display:flex;gap:4px}
+
+/* Lesson items in upload page */
+.litm{background:var(--card);border-radius:9px;border:1px solid var(--bdr);padding:10px 14px;margin-bottom:6px}
+.litm-top{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.litm-info{font-weight:600;font-size:13px}.litm-meta{font-size:11px;color:var(--ts);margin-left:8px}
+.litm-del{background:none;border:none;color:var(--ts);cursor:pointer;font-size:16px;padding:2px 6px}
+.litm-body{display:none;margin-top:10px;border-top:1px solid var(--bl);padding-top:10px}
+.litm.open .litm-body{display:block}
+
+/* Preview table */
+.ptbl{width:100%;border-collapse:collapse;font-size:11px}
+.ptbl th{padding:6px 8px;text-align:left;font-weight:600;background:var(--bl)}.ptbl td{padding:6px 8px;border-top:1px solid var(--bdr)}
+.ptbl .cn{font-family:var(--fc);font-size:14px}.ptbl .py{font-family:var(--fm);font-size:11px;color:var(--accent)}
+
+/* Exam */
+.exam{background:#fff;border-radius:4px;padding:36px;border:1px solid var(--bdr);line-height:1.8}
+.ex-hd{text-align:center;margin-bottom:28px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.ex-ti{font-family:var(--fc);font-size:22px;font-weight:700;color:var(--ink)}.ex-sub{font-size:12px;color:var(--ts);margin-top:2px}
+.ex-info{margin-top:12px;display:flex;justify-content:center;gap:20px;font-size:11px;color:var(--ts);flex-wrap:wrap}
+.sec-ti{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px}.sec-ti span{font-weight:400;font-size:11px;color:var(--ts)}.sec-desc{font-size:10px;color:var(--ts);margin-bottom:12px}
+.etbl{width:100%;border-collapse:collapse;margin-bottom:32px}.etbl th{padding:6px 4px;font-size:10px;font-weight:600;border-bottom:2px solid var(--ink)}.etbl td{padding:8px 4px;border-bottom:1px solid var(--bdr)}
+.etbl .num{text-align:center;color:var(--ts);font-size:11px;width:28px}.etbl .qcn{font-family:var(--fc);font-size:18px}.etbl .qkr{font-size:12px}.etbl .qt{font-size:8px;color:var(--ts);margin-left:4px}
+.abox{font-size:11px;color:var(--accent);background:var(--al);padding:4px 8px;border-radius:4px}.abox .py{font-family:var(--fm);font-size:10px}.abox .cn{font-family:var(--fc);font-size:14px}
+.aline{border-bottom:1px dashed var(--bdr);height:24px}
+.sq{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--bl)}
+.sq-a{margin-top:6px;margin-left:28px;font-size:11px;color:var(--accent);background:var(--al);padding:6px 10px;border-radius:5px}
+.sq-lines{margin-top:6px;margin-left:28px}.sq-lines div{border-bottom:1px dashed var(--bdr);height:24px;margin-bottom:2px}
+.asheet{margin-top:40px;border-top:2px solid var(--ink);padding-top:18px}.asheet h2{font-size:15px;text-align:center;margin-bottom:16px}.asheet h3{font-size:12px;font-weight:600;margin-bottom:8px}
+.atbl{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:18px}.atbl th{padding:4px 6px;border-bottom:1px solid var(--ink);text-align:left}.atbl td{padding:3px 6px;border-bottom:1px solid var(--bl)}.atbl .cn{font-family:var(--fc);font-size:13px}.atbl .py{font-family:var(--fm);color:var(--accent);font-size:9px}
+
+.ctrls{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.sec-hd{font-size:13px;font-weight:600;margin-bottom:10px;color:var(--ts)}
+
+@media print{.no-print{display:none!important}body,html{background:#fff!important}.hd{display:none!important}.mn{padding:0!important;max-width:100%!important}.exam{border:none!important;padding:16px 24px!important}.asheet{page-break-before:always}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
+@media(max-width:640px){.hd-in{padding:0 10px}.logo-t{font-size:13px}.nav-b{padding:5px 8px;font-size:10px}.mn{padding:18px 10px}.stat{padding:14px 8px}.stat-v{font-size:22px}.acts{grid-template-columns:1fr}.row.r2{grid-template-columns:1fr}.card{padding:16px}.exam{padding:20px 14px}.lgrid{grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:3px}.lcell{font-size:9px;padding:4px 1px}}
+</style>
+</head>
+<body>
+<header class="hd no-print"><div class="hd-in">
+  <div class="logo" onclick="go('home')"><b class="logo-c">中</b><div><div class="logo-t">중국어 시험 생성기</div><div class="logo-s">Chinese Exam Generator</div></div></div>
+  <nav class="nav"><button class="nav-b on" data-p="home" onclick="go('home')">◉ 홈</button><button class="nav-b" data-p="upload" onclick="go('upload')">↑ 자료 관리</button><button class="nav-b" data-p="config" onclick="go('config')">⎘ 시험 생성</button></nav>
+</div></header>
+
+<main class="mn">
+<!-- HOME -->
+<div id="p-home" class="pg on">
+  <div style="text-align:center;margin-bottom:36px"><h1 style="font-family:var(--fc);font-size:32px;font-weight:700;color:var(--accent);margin-bottom:4px">中文考试</h1><p style="color:var(--ts);font-size:13px">이미지로 단어를 등록하고 시험지를 자동 생성합니다</p></div>
+  <div class="stats"><div class="stat"><div class="stat-v" style="color:var(--accent)" id="s-lc">0</div><div class="stat-l">등록된 강의</div></div><div class="stat"><div class="stat-v" style="color:var(--ok)" id="s-tw">0</div><div class="stat-l">총 단어</div></div><div class="stat"><div class="stat-v" style="color:var(--warn)" id="s-ts">0</div><div class="stat-l">총 문장</div></div></div>
+  <div class="acts">
+    <button class="act" style="background:var(--card);border:2px dashed var(--bdr);color:var(--text)" onclick="go('upload')"><div class="ic">📸</div><div class="ti">자료 업로드</div><div class="de" style="color:var(--ts)">이미지/텍스트로 단어·문장 등록</div></button>
+    <button class="act" id="h-exam" onclick="go('config')" disabled><div class="ic">📝</div><div class="ti">시험 생성</div><div class="de" id="h-exam-d">먼저 자료를 업로드하세요</div></button>
+  </div>
+  <div id="h-grid-sec" style="display:none"><div class="sec-hd">등록된 강의 현황</div><div class="lgrid" id="h-grid"></div></div>
+</div>
+
+<!-- UPLOAD -->
+<div id="p-upload" class="pg">
+  <h2>자료 관리</h2><p class="sub">이미지를 업로드하면 AI가 자동으로 단어를 추출합니다</p>
+  <div class="card">
+    <div class="row r2">
+      <div><label class="lb">강의 번호</label><select class="sel" id="u-num"></select></div>
+      <div><label class="lb">데이터 유형</label><div class="tgl"><button class="tgl-b on" onclick="setDT('words',this)">단어</button><button class="tgl-b" onclick="setDT('sentences',this)">문장</button></div></div>
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="lb">📸 이미지로 업로드 <span>— AI OCR (Claude API)</span></label>
+      <div class="iup" id="iup" onclick="$('i-img').click()"><div id="iup-c"><div style="font-size:28px;margin-bottom:4px">📷</div><div style="font-size:12px;font-weight:500">이미지 파일을 선택하세요</div><div style="font-size:10px;color:var(--ts);margin-top:2px">단어장 사진, 교재 스크린샷 등</div></div></div>
+      <div class="prog" id="prog" style="display:none"><div class="prog-f" id="prog-f" style="width:0%"></div></div>
+      <input type="file" id="i-img" accept="image/*" style="display:none" onchange="doOCR(this)">
+    </div>
+    <div class="dvd"><span>또는</span></div>
+    <div style="margin-bottom:12px">
+      <label class="lb">✏️ 텍스트로 입력 <span>— 직접 붙여넣기 또는 파일</span></label>
+      <div style="margin-bottom:6px"><button class="btn btn-o btn-sm" onclick="$('i-file').click()">📄 텍스트 파일</button><input type="file" id="i-file" accept=".txt,.csv,.tsv" style="display:none" onchange="doFile(this)"></div>
+      <div class="msg msg-info" id="ocr-hint" style="display:none">💡 <b>OCR 결과입니다.</b> 틀린 부분을 수정하고 저장하세요. 형식: 한자 [탭] 병음 [탭] 뜻</div>
+      <textarea class="inp" id="u-text" placeholder="한자	병음	뜻 (탭/쉼표/공백 구분)&#10;&#10;예: 你好	nǐ hǎo	안녕하세요&#10;예: 我是妈妈。	wǒ shì māma	저는 엄마입니다"></textarea>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-o" onclick="preview()">미리보기</button>
+      <button class="btn btn-p" onclick="saveData()">➕ 추가 저장</button>
+    </div>
+    <div id="u-msg"></div>
+    <div id="u-prev"></div>
+  </div>
+
+  <!-- 등록된 강의 목록 -->
+  <div id="u-list-sec" style="display:none">
+    <h2 style="margin-bottom:12px">등록된 강의 목록</h2>
+    <div id="u-list"></div>
+  </div>
+</div>
+
+<!-- CONFIG -->
+<div id="p-config" class="pg">
+  <h2>시험 생성</h2><p class="sub">범위와 문항 수를 설정하세요</p>
+  <div class="card">
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px">📚 시험 범위</div>
+    <div class="row r3"><div><label class="lb">시작</label><select class="sel" id="c-s"></select></div><div style="padding-bottom:6px;color:var(--ts);text-align:center">~</div><div><label class="lb">종료</label><select class="sel" id="c-e"></select></div></div>
+    <div style="font-size:10px;color:var(--ts);margin-bottom:18px" id="c-info"></div>
+
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px">📝 단어 시험</div>
+    <div class="row r2"><div><label class="lb">문항 수</label><input type="number" class="inp" id="c-wc" value="20" min="0"></div><div><label class="lb">유형</label><select class="sel" id="c-wt"><option value="both">혼합</option><option value="h2m">한자→뜻/병음</option><option value="m2h">뜻→한자/병음</option></select></div></div>
+
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px">💬 문장 시험</div>
+    <div class="row r2"><div><label class="lb">문항 수</label><input type="number" class="inp" id="c-sc" value="5" min="0"></div><div><label class="lb">유형</label><select class="sel" id="c-st"><option value="both">혼합</option><option value="c2k">중→한</option><option value="k2c">한→중</option></select></div></div>
+
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px">문장 출처</div>
+    <div class="tgl" style="margin-bottom:20px">
+      <button class="tgl-b on" onclick="setSM('ai',this)">🤖 AI 자동 생성</button>
+      <button class="tgl-b" onclick="setSM('manual',this)">📋 등록된 문장</button>
+    </div>
+
+    <div id="c-ld" style="display:none;text-align:center;padding:16px 0"><div class="spinner"></div><div style="font-size:12px;color:var(--accent)" id="c-ld-msg"></div></div>
+    <button class="btn btn-full btn-g" id="c-btn" onclick="generate()">시험지 생성하기</button>
+  </div>
+</div>
+
+<!-- EXAM -->
+<div id="p-exam" class="pg">
+  <div class="ctrls no-print">
+    <button class="btn btn-o" id="e-tog" onclick="togAns()">답안 보기</button>
+    <button class="btn btn-p" onclick="window.print()">🖨 인쇄</button>
+    <button class="btn btn-o" onclick="go('config')">← 다시 설정</button>
+  </div>
+  <div class="exam" id="e-paper"></div>
+</div>
+</main>
+
+<script>
+var SK='cexam-v5',API='/api/claude',MODEL='claude-sonnet-4-20250514';
+var L={},dt='words',sm='ai',ED=null,SA=false;
+try{var r=localStorage.getItem(SK);if(r)L=JSON.parse(r);}catch(e){}
+function $(id){return document.getElementById(id)}
+function save(){try{localStorage.setItem(SK,JSON.stringify(L));}catch(e){}}
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+
+// ─── Smart Parser ───
+function parse(text){
+  var pC=/[\u4e00-\u9fff\u3400-\u4dbf]/;
+  var pK=/[\uac00-\ud7af]/;
+  var pP=/[a-zA-Z\u0101\u00e1\u01ce\u00e0\u0113\u00e9\u011b\u00e8\u012b\u00ed\u01d0\u00ec\u014d\u00f3\u01d2\u00f2\u016b\u00fa\u01d4\u00f9\u01d6\u01d8\u01da\u01dc]/;
+  return text.split('\n').filter(function(l){return l.trim()}).map(function(l){
+    l=l.trim();
+    // 1) Tab
+    var ts=l.split('\t');if(ts.length>=3)return{hanzi:ts[0].trim(),pinyin:ts[1].trim(),meaning:ts.slice(2).join(', ').trim()};
+    // 2) Comma (3+)
+    if((l.match(/,/g)||[]).length>=2){var cs=[],cu='',iq=false;for(var i=0;i<l.length;i++){var c=l[i];if(c==='"')iq=!iq;else if(c===','&&!iq){cs.push(cu.trim());cu='';}else cu+=c;}cs.push(cu.trim());if(cs.length>=3)return{hanzi:cs[0],pinyin:cs[1],meaning:cs.slice(2).join(', ')};}
+    // 3) Space: detect 한자→병음→한글 transitions
+    var parts=l.split(/\s+/);if(parts.length<3)return null;
+    var hz='',py='',mn='',phase=0;
+    for(var pi=0;pi<parts.length;pi++){
+      var p=parts[pi],hC=pC.test(p),hK=pK.test(p),hP=pP.test(p)&&!hC&&!hK;
+      if(phase===0){
+        if(hC){hz+=(hz?' ':'')+p;}
+        else if(hP){phase=1;py=p;}
+        else if(hK){phase=2;mn=p;}
+      }else if(phase===1){
+        if(hK||(!hP&&!hC)){phase=2;mn=p;}
+        else{py+=' '+p;}
+      }else{mn+=' '+p;}
+    }
+    hz=hz.replace(/[。？！?!.]+$/,'').trim();
+    py=py.trim();mn=mn.trim();
+    if(hz&&py&&mn)return{hanzi:hz,pinyin:py,meaning:mn};
+    return null;
+  }).filter(Boolean);
+}
+
+// ─── Claude API ───
+async function callAPI(messages){
+  var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:MODEL,max_tokens:4000,messages:messages})});
+  var data=await res.json().catch(function(){return null});
+  if(!res.ok){var e=data?(typeof data.error==='string'?data.error:data.error?.message||JSON.stringify(data)):'API error '+res.status;throw new Error(e);}
+  return data.content.map(function(c){return c.text||''}).join('');
+}
+
+// ─── Navigation ───
+function go(p){
+  document.querySelectorAll('.pg').forEach(function(e){e.classList.remove('on')});
+  $('p-'+p).classList.add('on');
+  document.querySelectorAll('.nav-b').forEach(function(b){b.classList.remove('on')});
+  var nb=document.querySelector('.nav-b[data-p="'+p+'"]');if(nb)nb.classList.add('on');
+  if(p==='home')rHome();if(p==='upload')rUpload();if(p==='config')rConfig();
+  window.scrollTo(0,0);
+}
+
+function stats(){var tw=0,ts=0;Object.values(L).forEach(function(v){tw+=(v.words||[]).length;ts+=(v.sentences||[]).length;});return{lc:Object.keys(L).length,tw:tw,ts:ts};}
+function lnums(){return Object.keys(L).map(Number).sort(function(a,b){return a-b});}
+function avail(s,e){var w=0,se=0;for(var i=s;i<=e;i++){w+=(L[i]?.words||[]).length;se+=(L[i]?.sentences||[]).length;}return{w:w,s:se};}
+
+// ─── Home ───
+function rHome(){
+  var s=stats();
+  $('s-lc').textContent=s.lc;$('s-tw').textContent=s.tw;$('s-ts').textContent=s.ts;
+  var btn=$('h-exam'),d=$('h-exam-d');
+  if(s.lc>0){btn.disabled=false;btn.style.background='linear-gradient(135deg,#c41e3a,#8b1528)';btn.style.color='#fff';d.textContent='시험지 생성 + 인쇄';}
+  else{btn.disabled=true;btn.style.background='var(--bl)';btn.style.color='var(--ts)';d.textContent='먼저 자료를 업로드하세요';}
+  var gs=$('h-grid-sec'),g=$('h-grid');
+  if(s.lc>0){gs.style.display='';g.innerHTML='';for(var n=1;n<=50;n++){var h=!!L[n];var c=document.createElement('div');c.className='lcell'+(h?' has':'');c.innerHTML=n+'강'+(h?'<div class="s">'+(L[n].words||[]).length+'w '+(L[n].sentences||[]).length+'s</div>':'');g.appendChild(c);}}
+  else gs.style.display='none';
+}
+
+// ─── Upload ───
+function rUpload(){
+  var sel=$('u-num');sel.innerHTML='';
+  for(var n=1;n<=50;n++){var o=document.createElement('option');o.value=n;o.textContent=n+'강'+(L[n]?' ✓':'');sel.appendChild(o);}
+  rList();
+}
+function setDT(t,el){dt=t;el.parentElement.querySelectorAll('.tgl-b').forEach(function(b){b.classList.remove('on')});el.classList.add('on');}
+function msg(t,c){$('u-msg').innerHTML='<div class="msg msg-'+c+'">'+t+'</div>';}
+function showPrev(ents){
+  var a=$('u-prev');if(!ents.length){a.innerHTML='';return;}
+  a.innerHTML='<div style="margin-top:12px"><div style="font-size:11px;font-weight:600;color:var(--ts);margin-bottom:5px">미리보기 ('+ents.length+'개)</div><div style="background:var(--bg);border-radius:8px;overflow:hidden;border:1px solid var(--bdr)"><table class="ptbl"><thead><tr><th>한자</th><th>병음</th><th>뜻</th></tr></thead><tbody>'+ents.slice(0,15).map(function(e){return '<tr><td class="cn">'+e.hanzi+'</td><td class="py">'+e.pinyin+'</td><td>'+e.meaning+'</td></tr>';}).join('')+(ents.length>15?'<tr><td colspan="3" style="text-align:center;color:var(--ts)">... 외 '+(ents.length-15)+'개</td></tr>':'')+'</tbody></table></div></div>';
+}
+
+// OCR
+async function doOCR(input){
+  var file=input.files[0];if(!file)return;
+  var area=$('iup'),cont=$('iup-c');
+  area.classList.add('loading');
+  cont.innerHTML='<div class="spinner"></div><div style="font-size:12px;color:var(--accent);font-weight:500">AI가 이미지를 분석 중...</div>';
+  try{
+    var b64=await new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result.split(',')[1])};r.onerror=function(){rej(new Error('읽기 실패'))};r.readAsDataURL(file);});
+    var result=await callAPI([{role:'user',content:[
+      {type:'image',source:{type:'base64',media_type:file.type||'image/png',data:b64}},
+      {type:'text',text:'이 이미지에서 중국어 단어/문장을 추출하세요.\n형식: 한자[탭]병음(성조부호)[탭]한국어뜻\n병음/뜻이 없으면 직접 생성.\n머리말 없이 데이터만. 번호 제거.'}
+    ]}]);
+    $('u-text').value=result;
+    $('ocr-hint').style.display='';
+    var ents=parse(result);showPrev(ents);
+    msg(ents.length>0?'✅ '+ents.length+'개 항목 추출. 확인 후 저장하세요.':'추출 완료. 형식을 확인하고 수정해 주세요.',ents.length>0?'ok':'info');
+  }catch(e){msg('오류: '+e.message,'err');}
+  area.classList.remove('loading');
+  cont.innerHTML='<div style="font-size:28px;margin-bottom:4px">📷</div><div style="font-size:12px;font-weight:500">이미지 파일을 선택하세요</div><div style="font-size:10px;color:var(--ts);margin-top:2px">단어장 사진, 교재 스크린샷 등</div>';
+  input.value='';
+}
+function doFile(input){
+  var file=input.files[0];if(!file)return;$('ocr-hint').style.display='none';
+  var reader=new FileReader();reader.onload=function(e){$('u-text').value=e.target.result;var ents=parse(e.target.result);showPrev(ents);if(ents.length>0)msg(ents.length+'개 인식됨','ok');};reader.readAsText(file,'utf-8');
+}
+function preview(){
+  var text=$('u-text').value;if(!text.trim()){msg('데이터를 입력해 주세요.','err');return;}
+  var ents=parse(text);showPrev(ents);
+  msg(ents.length>0?ents.length+'개 인식됨':'인식된 데이터 없음. 형식: 한자[탭/쉼표/공백]병음[탭/쉼표/공백]뜻',ents.length>0?'ok':'err');
+}
+function saveData(){
+  var text=$('u-text').value;var ents=parse(text);
+  if(!ents.length){msg('저장할 데이터가 없습니다.','err');return;}
+  var num=Number($('u-num').value);
+  if(!L[num])L[num]={words:[],sentences:[]};
+  // ★ 누적 추가 (덮어쓰기 X)
+  if(dt==='words')L[num].words=L[num].words.concat(ents);
+  else L[num].sentences=L[num].sentences.concat(ents);
+  save();
+  msg('✅ '+num+'강 '+(dt==='words'?'단어':'문장')+' '+ents.length+'개 추가 완료! (총 '+(dt==='words'?L[num].words.length:L[num].sentences.length)+'개)','ok');
+  $('u-text').value='';$('ocr-hint').style.display='none';showPrev([]);rUpload();
+}
+
+// ★ 등록된 강의 목록 + 펼치면 항목 보기/삭제
+function rList(){
+  var sec=$('u-list-sec'),el=$('u-list'),keys=Object.keys(L).sort(function(a,b){return a-b});
+  if(!keys.length){sec.style.display='none';return;}
+  sec.style.display='';
+  el.innerHTML=keys.map(function(n){
+    var d=L[n],wl=d.words||[],sl=d.sentences||[];
+    var whtml=wl.map(function(w,i){return '<div class="ditm"><span class="hz">'+w.hanzi+'</span><span class="py">'+w.pinyin+'</span><span class="mn2">'+w.meaning+'</span><div class="acts2"><button class="btn btn-del btn-sm" onclick="delItem('+n+',\'words\','+i+')">삭제</button></div></div>';}).join('');
+    var shtml=sl.map(function(s,i){return '<div class="ditm"><span class="hz">'+s.hanzi+'</span><span class="py">'+s.pinyin+'</span><span class="mn2">'+s.meaning+'</span><div class="acts2"><button class="btn btn-del btn-sm" onclick="delItem('+n+',\'sentences\','+i+')">삭제</button></div></div>';}).join('');
+    return '<div class="litm" id="litm-'+n+'"><div class="litm-top" onclick="togLesson('+n+')"><div><span class="litm-info">'+n+'강</span><span class="litm-meta">단어 '+wl.length+'개 · 문장 '+sl.length+'개</span></div><div style="display:flex;gap:4px"><button class="btn btn-del btn-sm" onclick="event.stopPropagation();delLesson('+n+')">강의 삭제</button><span style="color:var(--ts);font-size:14px">▼</span></div></div><div class="litm-body">'
+    +(wl.length?'<div class="dlist"><div class="dlist-h">📝 단어 <span class="cnt">'+wl.length+'개</span></div>'+whtml+'</div>':'')
+    +(sl.length?'<div class="dlist" style="margin-top:12px"><div class="dlist-h">💬 문장 <span class="cnt">'+sl.length+'개</span></div>'+shtml+'</div>':'')
+    +'</div></div>';
+  }).join('');
+}
+function togLesson(n){$('litm-'+n).classList.toggle('open');}
+function delItem(n,type,idx){
+  L[n][type].splice(idx,1);
+  if(!L[n].words.length&&!L[n].sentences.length)delete L[n];
+  save();rUpload();
+}
+function delLesson(n){delete L[n];save();rUpload();}
+
+// ─── Config ───
+function rConfig(){
+  var nums=lnums();
+  ['c-s','c-e'].forEach(function(id){$(id).innerHTML=nums.map(function(n){return '<option value="'+n+'">'+n+'강</option>';}).join('');});
+  if(nums.length){$('c-s').value=nums[0];$('c-e').value=nums[nums.length-1];}
+  $('c-s').onchange=$('c-e').onchange=updInfo;
+  $('c-wc').oninput=$('c-sc').oninput=updBtn;
+  updInfo();updBtn();
+}
+function setSM(m,el){sm=m;el.parentElement.querySelectorAll('.tgl-b').forEach(function(b){b.classList.remove('on')});el.classList.add('on');updBtn();}
+function updInfo(){var s=Number($('c-s').value),e=Number($('c-e').value),a=avail(s,e);$('c-info').textContent='범위: 단어 '+a.w+'개, 문장 '+a.s+'개';}
+function updBtn(){
+  var wc=Number($('c-wc').value),sc=Number($('c-sc').value),btn=$('c-btn');
+  if(wc>0||sc>0){btn.className='btn btn-full btn-g';btn.disabled=false;btn.textContent=(sc>0&&sm==='ai')?'🤖 AI 문장 생성 + 시험지':'시험지 생성하기';}
+  else{btn.className='btn btn-full btn-d';btn.disabled=true;btn.textContent='시험지 생성하기';}
+}
+
+async function generate(){
+  var s=Number($('c-s').value),e=Number($('c-e').value),wc=Number($('c-wc').value),sc=Number($('c-sc').value);
+  var wt=$('c-wt').value,st=$('c-st').value;
+  if(!wc&&!sc)return;
+  var gen=[];
+  if(sc>0&&sm==='ai'){
+    $('c-ld').style.display='';$('c-btn').style.display='none';$('c-ld-msg').textContent='AI가 문장을 생성하는 중...';
+    try{
+      var aw=[];for(var i=s;i<=e;i++)if(L[i])aw=aw.concat(L[i].words||[]);
+      var sam=shuffle(aw).slice(0,Math.min(aw.length,40));
+      var wl=sam.map(function(w){return w.hanzi+' ('+w.pinyin+') - '+w.meaning;}).join('\n');
+      var res=await callAPI([{role:'user',content:'아래 단어를 조합하여 중국어 문장 '+sc+'개를 만드세요.\n형식: 중국어문장[탭]병음(성조부호)[탭]한국어해석\n머리말 없이 데이터만. 정확히 '+sc+'개.\n\n'+wl}]);
+      gen=parse(res);
+    }catch(err){$('c-ld-msg').textContent='오류: '+err.message;await new Promise(function(r){setTimeout(r,1500)});}
+    $('c-ld').style.display='none';$('c-btn').style.display='';
+  }
+  var aw2=[],as=[];
+  for(var i=s;i<=e;i++){if(L[i]){aw2=aw2.concat((L[i].words||[]).map(function(w){return Object.assign({},w,{lesson:i})}));as=as.concat((L[i].sentences||[]).map(function(x){return Object.assign({},x,{lesson:i})}));}}
+  if(gen.length)as=as.concat(gen);
+  var sw=shuffle(aw2).slice(0,Math.min(wc,aw2.length)),ss=shuffle(as).slice(0,Math.min(sc,as.length));
+  var wq=sw.map(function(w,i){var qt=wt==='both'?(i%2?'m2h':'h2m'):wt;return Object.assign({},w,{qt:qt})});
+  var sq=ss.map(function(x,i){var qt=st==='both'?(i%2?'k2c':'c2k'):st;return Object.assign({},x,{qt:qt})});
+  ED={words:wq,sentences:sq,cfg:{s:s,e:e}};SA=false;rExam();go('exam');
+}
+
+// ─── Exam ───
+function rExam(){
+  if(!ED)return;var w=ED.words,s=ED.sentences,cfg=ED.cfg,tot=w.length+s.length;
+  var h='<div class="ex-hd"><div class="ex-ti">中文词汇·句子测验</div><div class="ex-sub">'+cfg.s+'강 ~ '+cfg.e+'강</div><div class="ex-info"><span>이름: _______________</span><span>날짜: _______________</span><span>점수: ___ / '+tot+'</span></div></div>';
+  if(w.length){
+    h+='<div class="sec-ti">一. 단어 <span>('+w.length+')</span></div><div class="sec-desc">한자의 병음/뜻을 쓰거나, 뜻으로 한자/병음을 쓰세요.</div><table class="etbl"><thead><tr><th style="text-align:center;width:28px">#</th><th style="text-align:left">문제</th><th style="text-align:left;width:40%">답</th></tr></thead><tbody>';
+    w.forEach(function(v,i){
+      var isH=v.qt==='h2m';
+      var q=isH?'<span class="qcn">'+v.hanzi+'</span>':'<span class="qkr">'+v.meaning+'</span>';
+      var tl=isH?'뜻·병음':'한자·병음';
+      var a;
+      if(SA){a=isH?'<div class="abox"><span class="py">'+v.pinyin+'</span> | '+v.meaning+'</div>':'<div class="abox"><span class="cn">'+v.hanzi+'</span> | <span class="py">'+v.pinyin+'</span></div>';}
+      else a='<div class="aline"></div>';
+      h+='<tr><td class="num">'+(i+1)+'</td><td>'+q+'<span class="qt">['+tl+']</span></td><td>'+a+'</td></tr>';
+    });
+    h+='</tbody></table>';
+  }
+  if(s.length){
+    h+='<div class="sec-ti">二. 문장 <span>('+s.length+')</span></div><div class="sec-desc">중국어를 한국어로 해석하거나, 한국어를 중국어로 작문하세요.</div>';
+    s.forEach(function(v,i){
+      var isC=v.qt==='c2k';
+      var q=isC?'<div style="font-size:16px;font-family:var(--fc)">'+v.hanzi+'</div>':'<div style="font-size:12px">'+v.meaning+'</div>';
+      var tl=isC?'한국어 해석':'중국어 작문+병음';
+      var a;
+      if(SA){a=isC?'<div class="sq-a"><b>병음:</b> <span style="font-family:var(--fm)">'+v.pinyin+'</span><br><b>뜻:</b> '+v.meaning+'</div>':'<div class="sq-a"><b>한자:</b> <span style="font-family:var(--fc);font-size:14px">'+v.hanzi+'</span><br><b>병음:</b> <span style="font-family:var(--fm)">'+v.pinyin+'</span></div>';}
+      else a='<div class="sq-lines"><div></div><div></div></div>';
+      h+='<div class="sq"><div style="display:flex;gap:6px;align-items:baseline"><span style="font-size:11px;font-weight:600;color:var(--ts);min-width:24px">'+(i+1)+'.</span><div>'+q+'<div style="font-size:8px;color:var(--ts)">['+tl+']</div></div></div>'+a+'</div>';
+    });
+  }
+  if(SA){
+    h+='<div class="asheet"><h2>─── 답안지 ───</h2>';
+    if(w.length){h+='<h3>一. 단어</h3><table class="atbl"><thead><tr><th style="text-align:center;width:28px">#</th><th>한자</th><th>병음</th><th>뜻</th></tr></thead><tbody>';w.forEach(function(v,i){h+='<tr><td style="text-align:center;color:var(--ts)">'+(i+1)+'</td><td class="cn">'+v.hanzi+'</td><td class="py">'+v.pinyin+'</td><td>'+v.meaning+'</td></tr>';});h+='</tbody></table>';}
+    if(s.length){h+='<h3>二. 문장</h3><table class="atbl"><thead><tr><th style="text-align:center;width:28px">#</th><th>중국어</th><th>병음</th><th>한국어</th></tr></thead><tbody>';s.forEach(function(v,i){h+='<tr><td style="text-align:center;color:var(--ts)">'+(i+1)+'</td><td class="cn">'+v.hanzi+'</td><td class="py">'+v.pinyin+'</td><td>'+v.meaning+'</td></tr>';});h+='</tbody></table>';}
+    h+='</div>';
+  }
+  $('e-paper').innerHTML=h;
+  var tb=$('e-tog');tb.textContent=SA?'✓ 답안 숨기기':'답안 보기';tb.style.background=SA?'var(--al)':'';tb.style.color=SA?'var(--accent)':'';
+}
+function togAns(){SA=!SA;rExam();}
+
+rHome();
+</script>
+</body>
+</html>
