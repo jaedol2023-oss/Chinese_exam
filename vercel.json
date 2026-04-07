@@ -1,5 +1,8 @@
 {
-  "rewrites": [
-    { "source": "/api/claude", "destination": "/api/claude" }
+  "buildCommand": "",
+  "outputDirectory": "public",
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
