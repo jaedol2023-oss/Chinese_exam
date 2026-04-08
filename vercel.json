@@ -1,7 +1,5 @@
 {
-  "framework": null,
   "rewrites": [
-    { "source": "/api/claude", "destination": "/api/claude" },
-    { "source": "/api/auth", "destination": "/api/auth" }
+    { "source": "/api/claude", "destination": "/api/claude" }
   ]
 }

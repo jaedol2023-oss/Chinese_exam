@@ -135,6 +135,7 @@ textarea.inp{min-height:100px;font-family:var(--fm);line-height:1.7;resize:verti
     <button class="act" id="h-exam" onclick="go('config')" disabled><div class="ic">📝</div><div class="ti">시험 생성</div><div class="de" id="h-exam-d">먼저 자료를 업로드하세요</div></button>
   </div>
   <div id="h-grid-sec" style="display:none"><div class="sec-hd">등록된 강의 현황</div><div class="lgrid" id="h-grid"></div></div>
+  <div style="margin-top:24px;text-align:center"><button class="btn btn-o btn-sm" onclick="resetData()" style="font-size:11px;color:var(--ts)">🔄 원본 데이터로 초기화</button></div>
 </div>
 
 <!-- UPLOAD -->
@@ -463,6 +464,14 @@ function rExam(){
   var tb=$('e-tog');tb.textContent=SA?'✓ 답안 숨기기':'답안 보기';tb.style.background=SA?'var(--al)':'';tb.style.color=SA?'var(--accent)':'';
 }
 function togAns(){SA=!SA;rExam();}
+
+function resetData(){
+  if(!confirm('원본 데이터(서버 data.json)로 되돌릴까요?\n개인적으로 추가/삭제한 내용은 사라집니다.'))return;
+  localStorage.removeItem(SK);
+  fetch('/data.json').then(function(r){return r.json()}).then(function(d){
+    L=d;save();rHome();alert('✅ 원본 데이터로 초기화 완료!');
+  }).catch(function(){alert('서버 데이터를 불러올 수 없습니다.');});
+}
 
 rHome();
 </script>
