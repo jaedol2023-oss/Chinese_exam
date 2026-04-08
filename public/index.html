@@ -217,6 +217,14 @@ function $(id){return document.getElementById(id)}
 function save(){try{localStorage.setItem(SK,JSON.stringify(L));}catch(e){}}
 function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
 
+// 서버 데이터 자동 로드 (최초 접속 시 data.json에서 불러오기)
+(function loadServerData(){
+  if(Object.keys(L).length>0)return; // 이미 로컬에 데이터 있으면 스킵
+  fetch('/data.json').then(function(r){return r.json()}).then(function(d){
+    if(d&&Object.keys(d).length>0){L=d;save();rHome();}
+  }).catch(function(){});
+})();
+
 // ─── Smart Parser ───
 function parse(text){
   var pC=/[\u4e00-\u9fff\u3400-\u4dbf]/;
